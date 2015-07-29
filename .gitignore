@@ -1,0 +1,6 @@
+*.pyc
+*.swp
+*.pyth
+venv/
+__pycache__/
+tags
