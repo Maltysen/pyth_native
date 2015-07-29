@@ -12,7 +12,8 @@ operators = {
 	"I": (If_Statement,),
 	"F": (For_Loop,),
 	"W": (While_Loop,),
-	"=": (Assign,)
+	"=": (Assign,),
+	"m": (Map,)
 }
 
 digits = ".0123456789"

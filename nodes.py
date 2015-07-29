@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 UNBOUNDED = -1
 
 class Node(object):
@@ -19,12 +21,9 @@ class Node(object):
 	def last_child(self):
 		return self.children[-1]
 
-class No_Print(object):
-	pass
-
-class Statement(Node, No_Print):
+class Statement(Node):
 	def append_child(self, child):
-		if not isinstance(child, No_Print) \
+		if not isinstance(child, (Suppress_Imp_Print, Statement, Assign)) \
 			and len(self.children) >= self.block_from:
 			print_node = Imp_Print()
 			print_node.append_child(child)
@@ -51,6 +50,31 @@ class Control_Flow(Operator):
 	def eval(self):
 		return self.operate(*self.children)
 
+class Lambda(Node):
+	arity = 1
+	
+	def __init__(self, params):
+		super().__init__()
+		self.params = params
+	
+	def eval(self, *args):
+		global variables
+		old_vars = deepcopy(variables)
+		
+		for param, value in zip(self.params, args):
+			variables[param] = value
+		
+		return_val = self.first_child().eval()
+		
+		variables = old_vars
+		return return_val
+
+class Lambda_Container(Control_Flow):
+	def append_child(self, child):
+		if not self.children:
+			return super().append_child(Lambda(self.params)).append_child(child)
+		return super().append_child(child)
+
 class Root(Statement):
 	arity = UNBOUNDED
 	block_from = 0
@@ -72,7 +96,7 @@ class Number(Node):
 	def eval(self):
 		return self.value
 
-class Suppress_Imp_Print(Operator, No_Print):
+class Suppress_Imp_Print(Operator):
 	arity = 1
 	
 	def operate(self, a):
@@ -87,7 +111,8 @@ class Imp_Print(Operator):
 variables = {
 		"T": 10,
 		"Z": 0,
-		"Y": []
+		"Y": [],
+		"d": " "
 }
 
 class Variable(Node):
@@ -100,7 +125,7 @@ class Variable(Node):
 	def eval(self):
 		return variables[self.name]
 
-class Assign(Control_Flow, No_Print):
+class Assign(Control_Flow):
 	arity = 2
 	
 	def operate(self, a, b):
@@ -136,6 +161,13 @@ class While_Loop(Control_Flow, Statement):
 	def operate(self, a, *args):
 		while a.eval():
 			self.eval_block()
+
+class Map(Lambda_Container):
+	arity = 2
+	params = ["d"]
+	
+	def operate(self, a, b):
+		return [a.eval(value) for value in b.eval()]
 
 class Add(Operator):
 	arity = 2
