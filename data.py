@@ -11,6 +11,7 @@ operators = {
 	" ": (Suppress_Imp_Print,),
 	"I": (If_Statement,),
 	"F": (For_Loop,),
+	"W": (While_Loop,),
 	"=": (Assign,)
 }
 

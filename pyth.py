@@ -33,7 +33,7 @@ def construct_ast(code):
 		#Parse numbers
 		elif active_char in digits:
 			number = active_char
-			while rest_code[0] in digits and \
+			while rest_code and rest_code[0] in digits and \
 				not (rest_code[0]=="." and "." in number):
 				number += rest_code.pop(0)
 			parent = parent.append_child(Number(eval(number)))

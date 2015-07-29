@@ -5,7 +5,7 @@ class Node(object):
 		self.children = []
 
 	def eval(self):
-		self.eval_all(self.children)
+		return None
 	
 	def append_child(self, child):
 		self.children.append(child)
@@ -18,14 +18,14 @@ class Node(object):
 	
 	def last_child(self):
 		return self.children[-1]
-	
-	def eval_all(self, expressions):
-		for expression in expressions:
-			expression.eval()
-	
-class Statement(Node):
+
+class No_Print(object):
+	pass
+
+class Statement(Node, No_Print):
 	def append_child(self, child):
-		if not isinstance(child, (Suppress_Imp_Print, Statement, Assign)):
+		if not isinstance(child, No_Print) \
+			and len(self.children) >= self.block_from:
 			print_node = Imp_Print()
 			print_node.append_child(child)
 		
@@ -35,6 +35,10 @@ class Statement(Node):
 			super().append_child(child)
 		
 		return child
+	
+	def eval_block(self):
+		for expression in self.children[self.block_from:]:
+			expression.eval()
 
 class Operator(Node):
 	def eval(self):
@@ -49,6 +53,10 @@ class Control_Flow(Operator):
 
 class Root(Statement):
 	arity = UNBOUNDED
+	block_from = 0
+	
+	def eval(self):
+		self.eval_block()
 	
 	def __init__(self):
 		super().__init__()
@@ -64,7 +72,7 @@ class Number(Node):
 	def eval(self):
 		return self.value
 
-class Suppress_Imp_Print(Operator):
+class Suppress_Imp_Print(Operator, No_Print):
 	arity = 1
 	
 	def operate(self, a):
@@ -92,7 +100,7 @@ class Variable(Node):
 	def eval(self):
 		return variables[self.name]
 
-class Assign(Control_Flow):
+class Assign(Control_Flow, No_Print):
 	arity = 2
 	
 	def operate(self, a, b):
@@ -103,21 +111,31 @@ class Assign(Control_Flow):
 
 class If_Statement(Control_Flow, Statement):
 	arity = UNBOUNDED
+	block_from = 1
 	
 	def operate(self, a, *args):
 		self.true = False
 		
-		if a.first_child().eval():
+		if a.eval():
 			self.true = True
-			self.eval_all(args)
+			self.eval_block()
 
 class For_Loop(Control_Flow, Statement):
 	arity = UNBOUNDED
+	block_from = 2
 	
 	def operate(self, a, b, *args):
-		for value in b.first_child().eval():
-			variables[a.first_child().name] = value
-			self.eval_all(args)
+		for value in b.eval():
+			variables[a.name] = value
+			self.eval_block()
+
+class While_Loop(Control_Flow, Statement):
+	arity = UNBOUNDED
+	block_from = 1
+	
+	def operate(self, a, *args):
+		while a.eval():
+			self.eval_block()
 
 class Add(Operator):
 	arity = 2
