@@ -33,9 +33,10 @@ def construct_ast(code):
         #Parse numbers
         elif active_char in digits:
             number = active_char
-            while rest_code and rest_code[0] in digits and \
-                not (rest_code[0]=="." and "." in number):
-                number += rest_code.pop(0)
+            if  number != "0":
+                while rest_code and rest_code[0] in digits and \
+                    not (rest_code[0]=="." and "." in number):
+                    number += rest_code.pop(0)
             parent = parent.append_child(Literal(eval(number)))
 
         #Char-Escape
@@ -45,6 +46,8 @@ def construct_ast(code):
         #Check meta-operators from data.py
         elif active_char in meta_ops and not len(parent.children) and parent.arity > 0:
             operator = meta_ops[active_char](parent)
+            if operator.arity == ARITY_VARIABLE or parent.arity <= operator.arity:
+                operator.arity = parent.arity
             parent.parent.children.pop()
             parent.parent.append_child(operator)
             parent = operator

@@ -1,16 +1,25 @@
 from nodes import *
 
+#TODO: \n $ '
+
 operators = {
-	"+": Add,
+	" ": Suppress_Imp_Print,
+	"!": Negate,
+	"#": ErrorLoop,
+	"%": Mod,
+	"&": And,
+	"(": Tuple,
 	"*": Mul,
-	"-": Sub,
+	"+": Plus,
+	",": Couple,
+	"-": Minus,
 	"/": Div,
+
+	"_": Neg,
 	"c": Float_Div,
 	"[": List,
-	",": Couple,
 	"]": One_List,
 	"?": Ternary,
-	" ": Suppress_Imp_Print,
 	"I": If_Statement,
 	"F": For_Loop,
 	"W": While_Loop,
@@ -23,14 +32,12 @@ operators = {
 	"q": Equals,
 	"h": Head,
 	"`": Repr,
-	"C": Char
+	"C": Char,
+	"P": Primes_Pop
 }
 
 meta_ops = {
-	"F": Fold,
-	"M": Unary_Map,
-	"L": Left_Map,
-	"R": Right_Map
+	"M": Map
 }
 
 digits = ".0123456789"
