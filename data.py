@@ -1,6 +1,18 @@
 from nodes import *
 
-#TODO: \n $ '
+#TODO: \n
+#TODO: $
+#TODO: '
+#TODO: B
+#TODO: D
+#TODO: J
+#TODO: K
+#TODO: L
+#TODO: M
+#TODO: Q
+#TODO: R
+#TODO: z
+
 
 operators = {
 	" ": Suppress_Imp_Print,
@@ -14,26 +26,56 @@ operators = {
 	",": Couple,
 	"-": Minus,
 	"/": Div,
-
-	"_": Neg,
-	"c": Float_Div,
+	":": Slice,
+	"<": Less,
+	"=": Assign,
+	">": Greater,
+	"?": Ternary,
+	"@": Lookup,
+	"A": Double_Assign,
+	"C": Char,
+	"E": Eval_Input,
+	"F": For_Loop,
+	"I": If_Statement,
+	"O": Random,
+	"P": Primes_Pop,
+	"S": Sort,
+	"U": Urange,
+	"V": Implicit_For,
+	"W": While_Loop,
+	"X": Assign_At,
 	"[": List,
 	"]": One_List,
-	"?": Ternary,
-	"I": If_Statement,
-	"F": For_Loop,
-	"W": While_Loop,
-	"=": Assign,
-	"~": Post_Assign,
-	"m": Map,
-	"s": Sum,
-	"r": Range,
-	"U": Urange,
-	"q": Equals,
-	"h": Head,
+	"^": Exponentiate,
+	"_": Negate,
 	"`": Repr,
-	"C": Char,
-	"P": Primes_Pop
+	"a": Append,
+	"c": Chop,
+	"e": End,
+	"f": Pfilter,
+	"g": Greater_Equal,
+	"h": Head,
+	"i": Base10,
+	"j": Join,
+	"l": Length,
+	"m": Map,
+	"n": Not_Equal,
+	"o": Order_By,
+	"p": Debug_Print,
+	"q": Equals,
+	"r": Range,
+	"s": Sum,
+	"t": Tail,
+	"u": Reduce,
+	"v": Eval,
+	"w": Raw_Input,
+	"x": Index,
+	"y": Powerset,
+	"{": Uniquify,
+	"|": Or,
+	"}": In,
+	"~": Post_Assign,
+
 }
 
 meta_ops = {
@@ -41,3 +83,5 @@ meta_ops = {
 }
 
 digits = ".0123456789"
+
+variables = "GHNTYZbdk"
