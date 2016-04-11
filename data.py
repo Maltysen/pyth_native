@@ -84,4 +84,16 @@ meta_ops = {
 
 digits = ".0123456789"
 
-variables = "GHNTYZbdk"
+Variable.env = {
+    "G": string.ascii_lowercase,
+    "H": {},
+    "N": '"',
+    "Q": None,
+    "T": 10,
+    "Y": [],
+    "Z": 0,
+    "b": "\n",
+    "d": " ",
+    "k": "",
+    "z": None
+}

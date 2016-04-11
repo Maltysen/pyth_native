@@ -242,18 +242,6 @@ class Literal(Node):
 class Variable(Node):
     arity = 0
 
-    env = {
-            "G": string.ascii_lowercase,
-            "H": {},
-            "N": '"',
-            "T": 10,
-            "Y": [],
-            "Z": 0,
-            "b": "\n",
-            "d": " ",
-            "k": ""
-    }
-
     def __init__(self, name):
         super().__init__()
         self.name = name
@@ -653,6 +641,24 @@ class Primes_Pop(Operator):
         if is_seq(a):
             return a[:-1]
         raise BadTypeCombinationError("P", a)
+
+class Init_Q(Node):
+    arity = 0
+
+    def eval(self):
+        Variable.env["Q"] = python_eval(input())
+
+    def __str__(self):
+        return "Init_Q()"
+
+class Init_z(Node):
+    arity = 0
+
+    def eval(self):
+        Variable.env["z"] = input()
+
+    def __str__(self):
+        return "Init_z()"
 
 class Sort(Operator):
     arity = 1

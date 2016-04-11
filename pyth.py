@@ -17,6 +17,7 @@ def construct_ast(code):
     parent = ast
     *rest_code, = code #Make code into list so we can use pop
     active_char = ""
+    inits = []
 
     while rest_code:
         active_char = rest_code.pop(0)
@@ -67,8 +68,16 @@ def construct_ast(code):
             operator = operators[active_char]
             parent = parent.append_child(operator())
 
-        elif active_char in variables:
+        elif active_char in Variable.env:
             parent = parent.append_child(Variable(active_char))
+
+            if active_char == "Q" and "Q" not in inits:
+                ast.children[0:0] = [Init_Q()]
+                inits += ["Q"]
+
+            elif active_char == "z" and "z" not in inits:
+                ast.children[0:0] = [Init_z()]
+                inits += ["z"]
 
         #That char is unimplemented, raise error
         else:
