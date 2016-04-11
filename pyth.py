@@ -12,6 +12,7 @@ class UnimplementedError(Exception):
             (self.active_char, len(self.rest_code) + 1)
 
 def construct_ast(code):
+    print(code)
     ast = Root()
     parent = ast
     *rest_code, = code #Make code into list so we can use pop
@@ -38,6 +39,15 @@ def construct_ast(code):
                     not (rest_code[0]=="." and "." in number):
                     number += rest_code.pop(0)
             parent = parent.append_child(Literal(eval(number)))
+
+        elif active_char == '"':
+            string = ""
+            active_char = rest_code.pop(0)
+            while active_char != '"':
+                string += active_char
+                active_char = rest_code.pop(0)
+
+            parent = parent.append_child(Literal(string))
 
         #Char-Escape
         elif active_char == "\\":
