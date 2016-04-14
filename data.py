@@ -1,6 +1,5 @@
 from nodes import *
 
-#TODO: \n
 #TODO: $
 #TODO: '
 #TODO: B
@@ -15,6 +14,7 @@ from nodes import *
 
 
 operators = {
+	"\n": Explicit_Print,
 	" ": Suppress_Imp_Print,
 	"!": Negate,
 	"#": ErrorLoop,
@@ -47,7 +47,7 @@ operators = {
 	"[": List,
 	"]": One_List,
 	"^": Exponentiate,
-	"_": Negate,
+	"_": Opposite,
 	"`": Repr,
 	"a": Append,
 	"c": Chop,
@@ -75,7 +75,8 @@ operators = {
 	"|": Or,
 	"}": In,
 	"~": Post_Assign,
-
+	".!": Factorial,
+	".H": Hex
 }
 
 meta_ops = {

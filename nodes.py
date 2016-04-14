@@ -7,6 +7,7 @@ import math
 import cmath
 import string
 import random
+import binascii
 import collections
 
 UNBOUNDED = ARITY_VARIABLE = -1
@@ -109,6 +110,15 @@ def equal(a, b=None):
             return all(a[0] == a_elem for a_elem in a)
     return a == b
 
+def hex_multitype(a, func):
+    if isinstance(a, str):
+        return "0x" + (binascii.hexlify(a.encode("utf-8")).decode("utf-8") or "0")
+
+    if isinstance(a, int):
+        return hex(a)
+
+    raise BadTypeCombinationError(func, a)
+
 def preprocess_eval(a):
     if isinstance(a, str):
         if a and a[0] == '0':
@@ -159,7 +169,7 @@ class Statement(Node):
     arity = UNBOUNDED
 
     def append_child(self, child):
-        if not isinstance(child, (Suppress_Imp_Print, Statement, Assign)) \
+        if not isinstance(child, (Suppress_Imp_Print, Statement, Assign, Explicit_Print)) \
             and len(self.children) >= self.block_from:
             print_node = Imp_Print()
             print_node.append_child(child)
@@ -224,7 +234,9 @@ class Imp_Print(Operator):
     arity = 1
 
     def operate(self, a):
-        return print(a)
+        print(a, flush=True)
+        return a
+
 
 class Literal(Node):
     arity = 0
@@ -252,6 +264,12 @@ class Variable(Node):
     def __str__(self):
         return "Variable(" + self.name + ")"
 
+class Explicit_Print(Operator):
+    arity = 1
+
+    def operate(self, a):
+        print(a, flush=True)
+        return a
 
 class Suppress_Imp_Print(Operator):
     arity = 1
@@ -770,7 +788,7 @@ class Exponentiate(Operator):
 
         raise BadTypeCombinationError("^", a, b)
 
-class Negate(Operator):
+class Opposite(Operator):
     arity = 1
 
     def operate(self, a):
@@ -1203,6 +1221,24 @@ class Post_Assign(Control_Flow):
 
         Variable.env[a.name] = b.eval()
         return old_value
+
+class Factorial(Operator):
+    arity = 1
+
+    def operate(self, a):
+        if isinstance(a, int):
+            return math.factorial(a)
+        if is_num(a):
+            return math.gamma(a + 1)
+        raise BadTypeCombinationError('.!', a)
+
+class Hex(Operator):
+    arity = 1
+
+    def operate(self, a):
+        if isinstance(a, int) or isinstance(a, str):
+            return hex_multitype(a, ".H")[2:]
+        raise BadTypeCombinationError(".H", a)
 
 ############################################################
 # class First_N(Lambda_Container):

@@ -12,7 +12,6 @@ class UnimplementedError(Exception):
             (self.active_char, len(self.rest_code) + 1)
 
 def construct_ast(code):
-    print(code)
     ast = Root()
     parent = ast
     *rest_code, = code #Make code into list so we can use pop
@@ -21,6 +20,8 @@ def construct_ast(code):
 
     while rest_code:
         active_char = rest_code.pop(0)
+        if active_char == "." and rest_code[0] not in digits:
+            active_char += rest_code.pop(0)
 
         #Rise up the tree if arity exhausted
         while len(parent.children) == parent.arity:
@@ -43,10 +44,13 @@ def construct_ast(code):
 
         elif active_char == '"':
             string = ""
-            active_char = rest_code.pop(0)
-            while active_char != '"':
-                string += active_char
+            while rest_code:
                 active_char = rest_code.pop(0)
+                if active_char == "\\" and rest_code[0] in '"\\':
+                    active_char = rest_code.pop(0)
+                elif active_char == '"':
+                    break
+                string += active_char
 
             parent = parent.append_child(Literal(string))
 
@@ -90,9 +94,11 @@ def run_ast(ast):
 
 if __name__ == "__main__":
     code = sys.argv[-1]
+    #code = "!0"
     ast = construct_ast(code)
 
     if "-d" in sys.argv:
+        print(code)
         print(ast)
         print()
 
