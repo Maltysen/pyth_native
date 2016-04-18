@@ -284,7 +284,8 @@ class Imp_Print(Operator):
     arity = 1
 
     def operate(self, a):
-        print(a, flush=True)
+        if a is not None:
+            print(a, flush=True)
         return a
 
 
@@ -365,6 +366,38 @@ class And(Control_Flow):
 
     def operate(sefl, a, b):
         return a.eval() and b.eval()
+
+class Read_File(Operator):
+    arity = 1
+
+    def operate(self, a):
+        if isinstance(a, str):
+            if any(a.lower().endswith("." + i) for i in
+                   ["png", "jpg", "jpeg", "gif", "svg", "ppm", "pgm", "pbm"]):
+                from PIL import Image
+                img = Image.open(a)
+                data = list(img.getdata())
+
+                # If alpha all 255, take out alpha
+                if len(data[0]) > 3 and all(i[3] == 255 for i in data):
+                    data = [i[:3] for i in data]
+
+                # Check grayscale
+                if all(i.count(i[0]) == len(i) for i in data):
+                    data = [i[0] for i in data]
+
+                data = chop(data, img.size[0])
+                return data
+
+            if a.startswith("http"):
+                b = urllib.request.urlopen(a)
+            else:
+                b = open(a)
+
+            b = [lin[:-1] if lin[-1] == '\n' else lin for lin in b]
+            return b
+
+        raise BadTypeCombinationError("'", a)
 
 class Tuple(Operator):
     arity = UNBOUNDED
@@ -2062,6 +2095,46 @@ class Cumulative_Reduce(Lambda_Container):
                 seq = seq[1:]
                 results.append(copy.deepcopy(acc))
             return results
+
+class Write_File(Operator):
+    arity = 2
+
+    def operate(self, a, b = "o"):
+        if not isinstance(b, str):
+            raise BadTypeCombinationError(".w", a, b)
+
+        if b.startswith("http"):
+            if isinstance(a, dict):
+                a = "&".join("=".join(i) for i in a.items())
+            return [lin[:-1] if lin[-1] == '\n' else lin for lin
+                    in urllib.request.urlopen(b, a.encode("UTF-8"))]
+
+        prefix = b.split('.')[0] if b else 'o'
+        suffix = b.split('.')[1] if '.' in b else None
+
+        if is_lst(a):
+            from PIL import Image
+            suffix = suffix if suffix else 'png'
+
+            if not is_lst(a[0][0]):
+                a = [[(i, i, i) for i in j] for j in a]
+            else:
+                a = [[tuple(i) for i in j] for j in a]
+
+            header = "RGBA" if len(a[0][0]) > 3 else "RGB"
+            img = Image.new(header, (len(a[0]), len(a)))
+
+            img.putdata(Psum(a))
+            img.save(prefix + "." + suffix)
+        else:
+            suffix = suffix if suffix else "txt"
+
+            with open(prefix + '.' + suffix, 'a', encoding='iso-8859-1') as f:
+                if is_seq(a) and not isinstance(a, str):
+                    f.write("\n".join(map(str, a)) + "\n")
+                else:
+                    f.write(str(a) + "\n")
+
 
 class Try_Catch(Control_Flow):
     arity = 2

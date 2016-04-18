@@ -1,7 +1,6 @@
 from nodes import *
 
 #TODO: $
-#TODO: '
 #TODO: B
 #TODO: D
 #TODO: L
@@ -12,7 +11,6 @@ from nodes import *
 #TODO: .?
 #TODO: .N
 #TODO: .Q
-#TODO: .w
 #TODO: .z
 #TODO: .v
 
@@ -23,6 +21,7 @@ operators = {
 	"#": ErrorLoop,
 	"%": Mod,
 	"&": And,
+	"'": Read_File,
 	"(": Tuple,
 	"*": Mul,
 	"+": Plus,
@@ -126,6 +125,7 @@ operators = {
 	".s": Strip,
 	".t": Trig,
 	".u": Cumulative_Reduce,
+	".w": Write_File,
 	".x": Try_Catch,
 	".{": Set,
 	".|": Bitwise_Or
