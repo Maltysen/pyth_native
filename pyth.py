@@ -46,7 +46,8 @@ def construct_ast(code):
             string = ""
             while rest_code:
                 active_char = rest_code.pop(0)
-                if active_char == "\\" and rest_code[0] in '"\\':
+
+                if active_char == "\\" and rest_code and rest_code[0] in '"\\':
                     active_char = rest_code.pop(0)
                 elif active_char == '"':
                     break
@@ -100,7 +101,6 @@ def run_ast(ast):
 
 if __name__ == "__main__":
     code = sys.argv[-1]
-    #code = "!0"
     ast = construct_ast(code)
 
     if "-d" in sys.argv:

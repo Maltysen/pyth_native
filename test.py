@@ -49,7 +49,7 @@ test_cases = [
     ('"\\\\', '\\\n'),
     ('"\\\\\\"', '\\"\n'),
     ('"\n', '\n\n'),
-    ('"\\\n', ''),
+    ('"\\\n', '\\\n'),
     # #
     ('#1B1', '1\n1'),
     ('#1/1 0 2)2', '1\n2'),
@@ -873,11 +873,11 @@ def test(pyth_code, expected_output, input_message=''):
     else:
         if error:
             sys.exit("Error thrown by %s\n%s" %
-                     (repr(pyth_code), error))
+                     (pyth_code, error))
         if output != expected_output and output != expected_output + '\n':
             sys.exit("Bad output by %s"
                      "\nExpected: %r.\nReceived: %r" %
-                     (repr(pyth_code), expected_output, output))
+                     (pyth_code, expected_output, output))
 
 if __name__ == '__main__':
     for test_case in test_cases:
