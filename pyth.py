@@ -73,19 +73,25 @@ def construct_ast(code):
             parent = parent.append_child(operator())
 
         elif active_char in Variable.env:
+            if active_char not in inits:
+                inits += [active_char]
+
+                if active_char in "KJ":
+                    rest_code = ["="] + [active_char] + rest_code
+                    continue
+
             parent = parent.append_child(Variable(active_char))
-
-            if active_char == "Q" and "Q" not in inits:
-                ast.children[0:0] = [Init_Q()]
-                inits += ["Q"]
-
-            elif active_char == "z" and "z" not in inits:
-                ast.children[0:0] = [Init_z()]
-                inits += ["z"]
 
         #That char is unimplemented, raise error
         else:
             raise UnimplementedError(active_char, rest_code)
+
+    #Post-processing
+    if "Q" in inits:
+        ast.children[0:0] = [Init_Q()]
+
+    if "z" in inits:
+        ast.children[0:0] = [Init_z()]
 
     return ast
 

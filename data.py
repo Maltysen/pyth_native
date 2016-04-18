@@ -4,14 +4,17 @@ from nodes import *
 #TODO: '
 #TODO: B
 #TODO: D
-#TODO: J
-#TODO: K
 #TODO: L
 #TODO: M
-#TODO: Q
 #TODO: R
-#TODO: z
-
+#TODO: ."
+#TODO: .*
+#TODO: .?
+#TODO: .N
+#TODO: .Q
+#TODO: .w
+#TODO: .z
+#TODO: .v
 
 operators = {
 	"\n": Explicit_Print,
@@ -52,7 +55,7 @@ operators = {
 	"a": Append,
 	"c": Chop,
 	"e": End,
-	"f": Pfilter,
+	"f": Filter,
 	"g": Greater_Equal,
 	"h": Head,
 	"i": Base10,
@@ -76,7 +79,56 @@ operators = {
 	"}": In,
 	"~": Post_Assign,
 	".!": Factorial,
-	".H": Hex
+	".&": Bitwise_And,
+	".(": Pop_Loc,
+	".)": Pop,
+	"._": Remove,
+	"./": Partition,
+	".:": Substrings,
+	".<": Left_Shift,
+	".>": Right_Shift,
+	".A": All,
+	".B": Bin_Str,
+	".C": Combs_Repl,
+	".D": Divmod,
+	".E": Any,
+	".F": Format_Str,
+	".H": Hex_Str,
+	".I": Invert,
+	".M": Maximize,
+	".O": Oct_Str,
+	".P": Permutations2,
+	".R": Round,
+	".S": Shuffle,
+	".T": Justified_Transpose,
+	".U": Reduce2,
+	".V": Infinite_For,
+	".W": Apply_While,
+	".Z": Zlib_Compress,
+	".[": Pad_Str,
+	".^": Mod_Exp,
+	"._": Prefixes,
+	".a": Abs,
+	".b": Binary_Map,
+	".c": Combs,
+	".d": Datetime,
+	".e": Enumerated_Map,
+	".f": First_N,
+	".g": Group_By,
+	".i": Interleave,
+	".j": Complex,
+	".l": Log,
+	".m": Minimal,
+	".n": Numbers,
+	".p": Permutations,
+	".q": Quit,
+	".r": Rotate,
+	".s": Strip,
+	".t": Trig,
+	".u": Cumulative_Reduce,
+	".x": Try_Catch,
+	".{": Set,
+	".|": Bitwise_Or
 }
 
 meta_ops = {
@@ -88,6 +140,8 @@ digits = ".0123456789"
 Variable.env = {
     "G": string.ascii_lowercase,
     "H": {},
+	"K": None,
+	"J": None,
     "N": '"',
     "Q": None,
     "T": 10,
