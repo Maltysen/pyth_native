@@ -10,8 +10,6 @@ from nodes import *
 #TODO: .*
 #TODO: .?
 #TODO: .N
-#TODO: .Q
-#TODO: .z
 #TODO: .v
 
 operators = {
@@ -97,6 +95,7 @@ operators = {
 	".M": Maximize,
 	".O": Oct_Str,
 	".P": Permutations2,
+	".Q": Eval_All_Input,
 	".R": Round,
 	".S": Shuffle,
 	".T": Justified_Transpose,
@@ -127,6 +126,7 @@ operators = {
 	".u": Cumulative_Reduce,
 	".w": Write_File,
 	".x": Try_Catch,
+	".z": All_Input,
 	".{": Set,
 	".|": Bitwise_Or
 }

@@ -1,5 +1,6 @@
 import copy
 from functools import reduce
+import functools
 import numbers
 import itertools
 import ast
@@ -167,6 +168,10 @@ def infinite_iterator(start):
 
     raise BadTypeCombinationError("infinite_iterator, probably .V", start)
 
+@functools.lru_cache(1)
+def all_input():
+    return [l.rstrip("\n") for l in sys.stdin]
+
 def preprocess_eval(a):
     if isinstance(a, str):
         if a and a[0] == '0':
@@ -178,7 +183,7 @@ def preprocess_eval(a):
             return a
     raise BadTypeCombinationError('v', a)
 
-def Pliteral_eval(a):
+def literal_eval(a):
     if isinstance(a, str):
         return ast.literal_eval(preprocess_eval(a))
     raise BadTypeCombinationError('v', a)
@@ -1161,7 +1166,7 @@ class Sum(Operator):
                 first = a[:cutoff]
                 second = a[cutoff:]
                 return plus(self.operate(first), self.operate(second))
-            return reduce(lambda b, c: plus(b, c), a[1:], a[0])
+            return reduce(lambda b, c: Plus.operate(None, b, c), a[1:], a[0])
         if isinstance(a, complex):
             return a.real
         if a == '':
@@ -1595,6 +1600,13 @@ class Permutations2(Operator):
             return result
 
         raise BadTypeCombinationError(".P", a, b)
+
+class Eval_All_Input(Operator):
+    arity = 0
+
+    def operate(self):
+        return [literal_eval(val) for val in all_input()]
+
 
 class Round(Operator):
     arity = 2
@@ -2144,6 +2156,12 @@ class Try_Catch(Control_Flow):
             return a.eval()
         except:
             return b.eval()
+
+class All_Input(Operator):
+    arity = 0
+
+    def operate(self):
+        return all_input()
 
 class Set(Operator):
     arity = 1
