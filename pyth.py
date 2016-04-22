@@ -44,7 +44,12 @@ def construct_ast(code):
             parent = parent.parent
 
         elif active_char == ";":
-            parent = ast
+            while parent is not ast:
+                if parent.arity is not UNBOUNDED and len(parent.children) < parent.arity:
+                    parent.children += [Variable("Q") for _ in range(parent.arity - len(parent.children))]
+                    if "Q" not in inits:
+                        inits += ["Q"]
+                parent = parent.parent
 
         #Parse numbers
         elif active_char in digits:
