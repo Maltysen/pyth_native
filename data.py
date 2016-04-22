@@ -138,19 +138,19 @@ meta_ops = {
 digits = ".0123456789"
 
 Variable.env = {
-    "G": string.ascii_lowercase,
-    "H": {},
+	"G": string.ascii_lowercase,
+	"H": {},
 	"K": None,
 	"J": None,
-    "N": '"',
-    "Q": None,
-    "T": 10,
-    "Y": [],
-    "Z": 0,
-    "b": "\n",
-    "d": " ",
-    "k": "",
-    "z": None
+	"N": '"',
+	"Q": None,
+	"T": 10,
+	"Y": [],
+	"Z": 0,
+	"b": "\n",
+	"d": " ",
+	"k": "",
+	"z": None
 }
 
 Lambda.param_rot = ["H", "N", "Y", "G", "b", "Z", "k", "T", "d"]
