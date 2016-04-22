@@ -3,8 +3,6 @@ from nodes import *
 #TODO: $
 #TODO: B
 #TODO: D
-#TODO: L
-#TODO: M
 #TODO: R
 #TODO: ."
 #TODO: .*
@@ -37,6 +35,8 @@ operators = {
 	"E": Eval_Input,
 	"F": For_Loop,
 	"I": If_Statement,
+	"L": Func_Def,
+	"M": Func_Def2,
 	"O": Random,
 	"P": Primes_Pop,
 	"S": Sort,

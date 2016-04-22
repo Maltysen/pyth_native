@@ -698,6 +698,20 @@ class If_Statement(Control_Flow, Statement):
             self.true = True
             self.eval_block()
 
+class Func_Def(Lambda_Container):
+    arity = 1
+    params = ["b"]
+
+    def operate(self, a):
+        Powerset.operate = a.eval
+
+class Func_Def2(Lambda_Container):
+    arity = 1
+    params = ["G", "H"]
+
+    def operate(self, a):
+        Greater_Equal.operate = a.eval
+
 class Random(Operator):
     arity = 1
 
