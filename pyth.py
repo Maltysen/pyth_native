@@ -44,12 +44,19 @@ def construct_ast(code):
 			parent = parent.parent
 
 		elif active_char == ";":
-			while parent is not ast:
-				if parent.arity is not UNBOUNDED and len(parent.children) < parent.arity:
-					parent.children += [Variable("Q") for _ in range(parent.arity - len(parent.children))]
-					if "Q" not in inits:
-						inits += ["Q"]
-				parent = parent.parent
+			p = parent
+			while p != ast:
+				if isinstance(p, Lambda) and p.params and rest_code:
+					parent = parent.append_child(Variable(p.params[0], p))
+					break
+				p = p.parent
+			else:
+				while parent is not ast:
+					if parent.arity is not UNBOUNDED and len(parent.children) < parent.arity:
+						parent.children += [Variable("Q") for _ in range(parent.arity - len(parent.children))]
+						if "Q" not in inits:
+							inits += ["Q"]
+					parent = parent.parent
 
 		#Parse numbers
 		elif active_char in digits:

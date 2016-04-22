@@ -261,14 +261,14 @@ class Lambda(Node):
 		Lambda.param_rot = Lambda.param_rot[num_params:] + Lambda.param_rot[:num_params]
 
 	def eval(self, *args):
-		old_vars = copy.deepcopy(Variable.env)
+		self.old_vars = copy.deepcopy(Variable.env)
 
 		for param, value in zip(self.params, args):
 			Variable.env[param] = value
 
 		return_val = self.first_child().eval()
 
-		Variable.env = old_vars
+		Variable.env = self.old_vars
 		return return_val
 
 	def __node_name__(self):
@@ -317,12 +317,13 @@ class Literal(Node):
 class Variable(Node):
 	arity = 0
 
-	def __init__(self, name):
+	def __init__(self, name, env = None):
 		super().__init__()
 		self.name = name
+		self.env = env
 
 	def eval(self):
-		return Variable.env[self.name]
+		return (self.env.old_vars if self.env else Variable.env)[self.name]
 
 	def __str__(self):
 		return "Variable(" + self.name + ")"
