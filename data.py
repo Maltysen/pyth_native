@@ -152,3 +152,5 @@ Variable.env = {
     "k": "",
     "z": None
 }
+
+Lambda.param_rot = ["H", "N", "Y", "G", "b", "Z", "k", "T", "d"]

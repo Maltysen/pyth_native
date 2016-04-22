@@ -215,8 +215,11 @@ class Node(object):
     def last_child(self):
         return self.children[-1]
 
+    def __node_name__(self):
+        return self.__class__.__name__
+
     def __str__(self):
-        return self.__class__.__name__ + ": {" + ", ".join(map(str, self.children)) + "}"
+        return self.__node_name__() + ": {" + ", ".join(map(str, self.children)) + "}"
 
 class Statement(Node):
     arity = UNBOUNDED
@@ -252,9 +255,10 @@ class Control_Flow(Operator):
 class Lambda(Node):
     arity = 1
 
-    def __init__(self, params):
+    def __init__(self, num_params):
         super().__init__()
-        self.params = params
+        self.params = Lambda.param_rot[:num_params]
+        Lambda.param_rot = Lambda.param_rot[num_params:] + Lambda.param_rot[:num_params]
 
     def eval(self, *args):
         old_vars = copy.deepcopy(Variable.env)
@@ -267,12 +271,15 @@ class Lambda(Node):
         Variable.env = old_vars
         return return_val
 
+    def __node_name__(self):
+        return "Lambda(%s)" % ", ".join(self.params)
+
 Lambda.__call__ = Lambda.eval
 
 class Lambda_Container(Control_Flow):
     def append_child(self, child):
         if not self.children:
-            return super().append_child(Lambda(self.params)).append_child(child)
+            return super().append_child(Lambda(self.num_params)).append_child(child)
         return super().append_child(child)
 
 class Root(Statement):
@@ -700,14 +707,14 @@ class If_Statement(Control_Flow, Statement):
 
 class Func_Def(Lambda_Container):
     arity = 1
-    params = ["b"]
+    num_params = 1
 
     def operate(self, a):
         Powerset.operate = a.eval
 
 class Func_Def2(Lambda_Container):
     arity = 1
-    params = ["G", "H"]
+    num_params = 2
 
     def operate(self, a):
         Greater_Equal.operate = a.eval
@@ -978,7 +985,7 @@ class End(Operator):
 
 class Filter(Lambda_Container):
     arity = 2
-    params = ["T"]
+    num_params = 1
 
     def operate(self, a, b=None):
         b = b.eval() if b != None else 1
@@ -1057,7 +1064,7 @@ class Length(Operator):
 
 class Map(Lambda_Container):
     arity = 2
-    params = ["d"]
+    num_params = 1
 
     def operate(self, a, b):
         b = b.eval()
@@ -1076,7 +1083,7 @@ class Not_Equal(Operator):
 
 class Order_By(Lambda_Container):
     arity = 2
-    params = ["N"]
+    num_params = 1
 
     def operate(self, a, b):
         b = b.eval()
@@ -1201,7 +1208,7 @@ class Tail(Operator):
 
 class Reduce(Lambda_Container):
     arity = 3
-    params = ["G", "H"]
+    num_params = 2
 
     def operate(self, a, b, c=None):
         b = b.eval()
@@ -1534,7 +1541,7 @@ class Hex_Str(Operator):
 
 class Invert(Lambda_Container):
     arity = 2
-    params = ["G"]
+    num_params = 1
 
     def operate(self, a, b):
         b = b.eval()
@@ -1558,7 +1565,7 @@ class Invert(Lambda_Container):
 
 class Maximize(Lambda_Container):
     arity = 2
-    params = ["Z"]
+    num_params = 1
 
     def operate(self, a, b):
         b = b.eval()
@@ -1680,7 +1687,7 @@ class Justified_Transpose(Operator):
 
 class Reduce2(Lambda_Container):
     arity = 2
-    params = ["b", "Z"]
+    num_params = 2
 
     def operate(self, a, b):
         b = b.eval()
@@ -1713,11 +1720,9 @@ class Infinite_For(Control_Flow, Statement):
 class Apply_While(Control_Flow):
     arity = 3
 
-    params = [["H"], ["Z"]]
-
     def append_child(self, child):
         if len(self.children) < 2:
-            return super().append_child(Lambda(self.params[len(self.children)])).append_child(child)
+            return super().append_child(Lambda(1)).append_child(child)
         return super().append_child(child)
 
     def operate(self, a, b, c):
@@ -1811,7 +1816,7 @@ class Abs(Operator):
 
 class Binary_Map(Lambda_Container):
     arity = 3
-    params = ["N", "Y"]
+    num_params = 2
 
     def operate(self, a, b, c=None):
         b = b.eval()
@@ -1883,7 +1888,7 @@ class Datetime(Operator):
 
 class Enumerated_Map(Lambda_Container):
     arity = 2
-    params = ["b", "k"]
+    num_params = 2
 
     def operate(self, a, b):
         b = b.eval()
@@ -1895,7 +1900,7 @@ class Enumerated_Map(Lambda_Container):
 
 class First_N(Lambda_Container):
     arity = 3
-    params = ["Z"]
+    num_params = 1
 
     def operate(self, a, b, c=None):
         b = b.eval()
@@ -1911,7 +1916,7 @@ class First_N(Lambda_Container):
 
 class Group_By(Lambda_Container):
     arity = 2
-    params = ["k"]
+    num_params = 1
 
     def operate(self, a, b):
         b = b.eval()
@@ -1967,7 +1972,7 @@ class Log(Operator):
 
 class Minimal(Lambda_Container):
     arity = 2
-    params = ["b"]
+    num_params = 1
 
     def operate(self, a, b):
         b = b.eval()
@@ -2093,7 +2098,7 @@ class Trig(Operator):
 
 class Cumulative_Reduce(Lambda_Container):
     arity = 3
-    params = ["N", "Y"]
+    num_params = 2
 
     def operate(self, a, b, c = None):
         b = b.eval()
