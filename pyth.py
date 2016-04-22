@@ -15,6 +15,7 @@ def construct_ast(code):
     ast = Root()
     parent = ast
     *rest_code, = code #Make code into list so we can use pop
+    rest_code += [";"]
     active_char = ""
     inits = []
 
@@ -26,11 +27,23 @@ def construct_ast(code):
         #Rise up the tree if arity exhausted
         while len(parent.children) == parent.arity:
             parent = parent.parent
+            #Check augmented assignment
+            if isinstance(parent, (Assign, Post_Assign)) and not isinstance(parent.children[0], Variable):
+                #DFS down tree for first variable
+                nodes_left = parent.children[:]
+                while nodes_left:
+                    current_node = nodes_left.pop(0)
+                    if isinstance(current_node, Variable):
+                        parent.children.insert(0, copy.deepcopy(current_node))
+                        break
+                    nodes_left = current_node.children + nodes_left
+                else:
+                    raise ValueError("Assignment needs at least one Variable.")
 
         if active_char == ")":
             parent = parent.parent
 
-        elif active_char ==";":
+        elif active_char == ";":
             parent = ast
 
         #Parse numbers
