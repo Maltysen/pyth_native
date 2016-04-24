@@ -132,7 +132,7 @@ operators = {
 }
 
 meta_ops = {
-	"M": Map
+	"M": Implicit_Map
 }
 
 digits = ".0123456789"

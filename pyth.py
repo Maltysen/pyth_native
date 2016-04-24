@@ -39,6 +39,8 @@ def construct_ast(code):
 					nodes_left = current_node.children + nodes_left
 				else:
 					raise ValueError("Assignment needs at least one Variable.")
+			elif isinstance(parent, Lambda):
+				Lambda.param_rot = Lambda.param_rot[-parent.num_params:] + Lambda.param_rot[:-parent.num_params]
 
 		if active_char == ")":
 			parent = parent.parent
@@ -85,13 +87,16 @@ def construct_ast(code):
 			parent = parent.append_child(Literal(rest_code.pop(0)))
 
 		#Check meta-operators from data.py
-		elif active_char in meta_ops and not len(parent.children) and parent.arity > 0:
-			operator = meta_ops[active_char](parent)
-			if operator.arity == ARITY_VARIABLE or parent.arity <= operator.arity:
-				operator.arity = parent.arity
-			parent.parent.children.pop()
-			parent.parent.append_child(operator)
-			parent = operator
+		elif active_char in meta_ops and len(parent.children) < parent.arity:
+			op = parent
+			sur_lambda = Lambda(1)
+			sur_lambda.parent = op.parent
+			sur_lambda.append_child(op)
+			meta_op = meta_ops[active_char](sur_lambda)
+			op.append_child(Variable(sur_lambda.params[0]))
+			op.parent.parent.children.pop()
+			parent = op.parent.parent.append_child(meta_op)
+			meta_op.parent = op
 
 		#Parse operators from data.py
 		elif active_char in operators:

@@ -248,6 +248,16 @@ class Operator(Node):
 	def operate(self):
 		pass
 
+class Meta_Operator(Node):
+	arity = 1
+
+	def __init__(self, op):
+		self.op = op
+		super().__init__()
+
+	def __str__(self):
+		return "%s(%s):" % (self.__class__.__name__, self.op) + super().__str__().split(":", 1)[1]
+
 class Control_Flow(Operator):
 	def eval(self):
 		return self.operate(*self.children)
@@ -257,6 +267,7 @@ class Lambda(Node):
 
 	def __init__(self, num_params):
 		super().__init__()
+		self.num_params = num_params
 		self.params = Lambda.param_rot[:num_params]
 		Lambda.param_rot = Lambda.param_rot[num_params:] + Lambda.param_rot[:num_params]
 
@@ -300,7 +311,6 @@ class Imp_Print(Operator):
 			print(a, flush=True)
 		return a
 
-
 class Literal(Node):
 	arity = 0
 
@@ -313,6 +323,13 @@ class Literal(Node):
 
 	def __str__(self):
 		return "Literal(" + repr(self.value) + ")"
+
+class Placeholder(Literal):
+	def __init__(self):
+		super().__init__(None)
+
+	def __str__(self):
+		return "Placeholder()"
 
 class Variable(Node):
 	arity = 0
@@ -719,6 +736,10 @@ class Func_Def2(Lambda_Container):
 
 	def operate(self, a):
 		Greater_Equal.operate = a.eval
+
+class Implicit_Map(Meta_Operator):
+	def eval(self):
+		return [self.op(i) for i in self.children[0].eval()]
 
 class Random(Operator):
 	arity = 1
